@@ -8,8 +8,9 @@ const cors = require('cors')
 
 app.use(cors())
 app.use(bodyParser.json())
-app.use('/shelter', require('./controllers/sheltercontroller'))
 app.use('/user', require('./controllers/usercontroller'))
+app.use(require('./middleware/validate-session'));
+app.use('/shelter', require('./controllers/sheltercontroller'))
 app.use('/profile', require('./controllers/profilecontroller'))
 
 http.listen(process.env.PORT, () => {

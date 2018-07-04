@@ -88,4 +88,19 @@ router.get('/', (req, res) => {
         .catch(err => res.status(500).json({error: err.errors[0].message}))
 })
 
+//allow individual shelters to be deleted by 
+router.delete('/delete/:id', (req, res) => {
+    var data = req.params.id;
+
+    Shelter
+        .destroy({
+            where:{id: data}
+        }).then(
+            function deleteLogSuccess(data){
+                res.send("Shelter successfully deleted")
+            }
+        );
+});
+
+
 module.exports = router;

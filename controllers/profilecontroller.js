@@ -2,9 +2,9 @@ const router = require("express").Router();
 const sequelize = require("../db");
 const Profile = sequelize.import("../models/profile");
 
-
 //create profile
 router.post("/createprofile", (req, res) => {
+  console.log("hey");
   Profile.create({
     first_name: req.body.firstName,
     last_name: req.body.lastName,
@@ -14,12 +14,12 @@ router.post("/createprofile", (req, res) => {
     child: req.body.child,
     counseling: req.body.counseling,
     sub_counseling: req.body.subCounseling,
-    owner: req.body.owner
+    owner: req.user.id
   })
     .then(profile => res.status(200).json(profile))
     .catch(err =>
       res.status(500).json({
-        error: err.errors[0].message
+        error: err
       })
     );
 });
@@ -38,13 +38,23 @@ router.get("/:id", (req, res) => {
 //allow records to be updated by user
 router.put("/update/:id", (req, res) => {
   var data = req.params.id;
+  var firstName = req.body.firstName;
+  var lastName = req.body.lastName;
+  var userEmail = req.body.userEmail;
+  var phoneNumber = req.body.phoneNumber;
+  var age = req.body.age;
   var child = req.body.child;
   var counseling = req.body.counseling;
   var subCounseling = req.body.subCounseling;
 
   Profile.update(
     {
-      child: child,
+      first_name: req.body.firstName,
+      last_name: req.body.lastName,
+      user_email: req.body.userEmail,
+      phone_number: req.body.phoneNumber,
+      age: req.body.age,
+      child: req.body.child,
       counseling: counseling,
       sub_counseling: subCounseling
     },
@@ -52,7 +62,12 @@ router.put("/update/:id", (req, res) => {
   ).then(
     function updateSuccess(updatedProfile) {
       res.json({
-        child: child,
+        first_name: req.body.firstName,
+        last_name: req.body.lastName,
+        user_email: req.body.userEmail,
+        phone_number: req.body.phoneNumber,
+        age: req.body.age,
+        child: req.body.child,
         counseling: counseling,
         sub_counseling: subCounseling
       });
@@ -64,17 +79,14 @@ router.put("/update/:id", (req, res) => {
 });
 
 //allow individual profiles to be deleted by user
-router.delete('/delete/:id', (req, res) => {
-    var data = req.params.id;
+router.delete("/delete/:id", (req, res) => {
+  var data = req.params.id;
 
-    Profile
-        .destroy({
-            where:{id: data}
-        }).then(
-            function deleteLogSuccess(data){
-                res.send("You've successfully deleted your profile")
-            }
-        );
+  Profile.destroy({
+    where: { id: data }
+  }).then(function deleteLogSuccess(data) {
+    res.send("You've successfully deleted your profile");
+  });
 });
 
 module.exports = router;
